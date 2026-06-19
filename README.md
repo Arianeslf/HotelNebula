@@ -1,75 +1,142 @@
-# Hotel Nebula
+# Hotel Nébula
 
-Projeto de banco de dados desenvolvido para organizar os dados da rede de hotéis Hotel Nebula.
+Este projeto apresenta a modelagem e implementação de um banco de dados para um sistema de gerenciamento hoteleiro.
 
-## Sobre o projeto
+O objetivo é organizar informações sobre hóspedes, quartos, reservas, hospedagens, pagamentos, funcionários e avaliações.
 
-O Hotel Nebula está expandindo suas operações e precisa organizar digitalmente seus dados para melhorar o controle de reservas, hospedagens, pagamentos, quartos, funcionários, avaliações e serviços extras.
+## 📌 Objetivo do Projeto
 
-O banco de dados foi criado com base no diagrama ER do projeto e também nas regras solicitadas pelo professor.
+Desenvolver um banco de dados capaz de controlar as principais operações de um hotel, permitindo registrar reservas, acompanhar hospedagens, gerenciar pagamentos e armazenar avaliações feitas pelos clientes.
 
-## Objetivo geral
+## 🧩 Entidades
 
-Desenvolver um projeto de banco de dados passando pelas etapas de compreensão do problema, modelagem dos dados, implementação do banco, inserção de dados para testes e extração de informações com consultas SQL.
+### HÓSPEDE
 
-## Entidades principais
+Armazena as informações dos clientes do hotel.
 
-- Hóspede
-- Quarto
-- Reserva
-- Pagamento
-- Hospedagem
-- Funcionário
-- Avaliação
-- Serviço Extra
-- Consumo de Serviço
+- `cpf` **PK**
+- `nome`
+- `email`
+- `telefone`
 
-## Relacionamentos
+### QUARTO
 
-Um hóspede pode realizar várias reservas.
+Representa os quartos disponíveis no hotel.
 
-Uma reserva pertence a um hóspede e a um quarto.
+- `id_quarto` **PK**
+- `numero`
+- `tipo`
+- `status`
+- `valor_diaria`
 
-Uma reserva pode gerar pagamento.
+### RESERVA
 
-Uma reserva pode gerar hospedagem.
+Registra as reservas realizadas pelos hóspedes.
 
-Uma hospedagem é atendida por um funcionário.
+- `id_reserva` **PK**
+- `cpf` **FK**
+- `id_quarto` **FK**
+- `data_reserva`
+- `data_checkin`
+- `data_checkout`
+- `status`
 
-Uma hospedagem pode receber avaliação.
+### HOSPEDAGEM
 
-Uma hospedagem pode consumir serviços extras.
+Representa a estadia real do hóspede no hotel.
 
-## Estrutura do repositório
+- `id_hospedagem` **PK**
+- `id_reserva` **FK**
+- `id_funcionario` **FK**
+- `data_checkin_real`
+- `data_checkout_real`
+- `status`
 
-```txt
-README.md
-hotel_nebula.sql
-```
+### PAGAMENTO
 
-## Arquivo SQL
+Registra os pagamentos relacionados às reservas.
 
-O arquivo `hotel_nebula.sql` contém:
+- `id_pagamento` **PK**
+- `id_reserva` **FK**
+- `valor`
+- `forma_pagamento`
+- `data_pagamento`
+- `status_pagamento`
 
-- criação do banco de dados;
-- criação das tabelas;
-- definição de chaves primárias e estrangeiras;
-- inserção de dados iniciais;
-- consultas SQL para análise dos dados.
+### FUNCIONÁRIO
 
-## Consultas criadas
+Armazena os dados dos funcionários do hotel.
 
-- quartos disponíveis em determinado período;
-- hóspedes que mais realizaram reservas;
-- faturamento por mês;
-- serviços extras mais consumidos;
-- quartos com melhores avaliações;
-- reservas canceladas;
-- quantidade de hospedagens atendidas por funcionário.
+- `id_funcionario` **PK**
+- `nome_funcionario`
+- `cargo`
+- `salario`
 
-## Tecnologias utilizadas
+### AVALIAÇÃO
+
+Armazena as avaliações feitas pelos hóspedes após a hospedagem.
+
+- `id_avaliacao` **PK**
+- `cpf` **FK**
+- `id_hospedagem` **FK**
+- `nota`
+- `comentario`
+- `data_avaliacao`
+
+## 🔗 Relacionamentos
+
+- Um hóspede pode realizar várias reservas.
+- Uma reserva pertence a apenas um hóspede.
+- Um quarto pode estar presente em várias reservas.
+- Uma reserva está relacionada a apenas um quarto.
+- Uma reserva pode gerar uma hospedagem.
+- Uma hospedagem está associada a uma única reserva.
+- Uma reserva pode ter um ou mais pagamentos.
+- Um pagamento pertence a uma única reserva.
+- Um funcionário pode atender várias hospedagens.
+- Uma hospedagem é atendida por um único funcionário.
+- Uma hospedagem pode receber uma avaliação.
+- Uma avaliação pertence a uma única hospedagem.
+- Um hóspede pode fazer várias avaliações.
+
+## 🛠️ Tecnologias Utilizadas
 
 - SQL
 - MySQL
-- GitHub
-- Draw.io
+- Modelagem de Banco de Dados
+- Modelo Entidade-Relacionamento
+- Normalização de Dados
+
+## 📂 Estrutura do Projeto
+
+O projeto contém os arquivos principais para criação e teste do banco de dados:
+
+- `script_hotel_nebula.sql`  
+  Arquivo com a criação do banco, tabelas, chaves primárias, chaves estrangeiras e dados de exemplo.
+
+- `README.md`  
+  Documento explicando o objetivo do projeto, entidades e relacionamentos.
+
+## ▶️ Como Executar
+
+1. Abra o MySQL Workbench ou outro ambiente SQL.
+2. Importe ou abra o arquivo `script_hotel_nebula.sql`.
+3. Execute o script completo.
+4. Verifique se as tabelas foram criadas corretamente.
+5. Execute os comandos `SELECT` para visualizar os dados cadastrados.
+
+## ✅ Consultas de Teste
+
+Exemplo de consulta para listar reservas com nome do hóspede e quarto:
+
+```sql
+SELECT 
+    r.id_reserva,
+    h.nome AS hospede,
+    q.numero AS quarto,
+    r.data_checkin,
+    r.data_checkout,
+    r.status
+FROM reserva r
+JOIN hospede h ON r.cpf = h.cpf
+JOIN quarto q ON r.id_quarto = q.id_quarto;
